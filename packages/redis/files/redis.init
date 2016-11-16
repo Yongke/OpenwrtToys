@@ -1,0 +1,26 @@
+#!/bin/sh /etc/rc.common
+
+START=98
+STOP=81
+
+SERVICE_USE_PID=1
+
+REDIS_BIN="/usr/bin/redis-server"
+REDIS_CONFIG="/etc/redis.conf"
+REDIS_PID="/var/run/redis.pid"
+REDIS_DATA="/tmp/redis"
+
+start() {
+	[ -d $REDIS_DATA ] || mkdir -p $REDIS_DATA
+	service_start $REDIS_BIN "$REDIS_CONFIG"
+}
+
+stop() {
+	if [ ! -f $REDIS_PID ] ; then
+		echo 'Not running!'
+	else
+		PID=$(cat $REDIS_PID)
+		service_stop $REDIS_BIN
+		[ -x /proc/$PID ] && kill -9 $PID
+	fi
+}
